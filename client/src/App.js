@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { createStore, applyMiddleware, combineReducers} from 'redux';
+import { createStore, applyMiddleware} from 'redux';
 import thunk from 'redux-thunk';
+import reducers from './reducers';
 
 const createStoreWithMiddleware = applyMiddleware(thunk)(createStore);
 let bearReducer = function(state =[], action){
@@ -13,9 +14,7 @@ let bearReducer = function(state =[], action){
   return state
 }
 
-let store = createStoreWithMiddleware(combineReducers({
-  bear: bearReducer
-}))
+let store = createStoreWithMiddleware(reducers)
 
 let fetchBearActionCreator = function(){
   return(dispatch)=>{
@@ -27,12 +26,12 @@ let fetchBearActionCreator = function(){
 }
 
 class App extends Component {
-  constructor(prop){
-    super(prop)
+  constructor(props){
+    super(props)
     this.state = {data: []};
   }
   componentDidMount(){
-    store.subscribe(() =>{
+    store.subscribe(() => {
       this.setState({data: store.getState().bear})
     })
     store.dispatch(fetchBearActionCreator());
@@ -41,12 +40,13 @@ class App extends Component {
     let bears = this.state.data;
     return (
       <div>
-      {
-        bears.map(bear => <div key={bear.id}>{bear.name}</div>)
-      }
+        {
+          bears.map(bear => <div key={bear.id}>{bear.name}</div>)
+        }
       </div>
     );
   }
 }
+
 
 export default App;
